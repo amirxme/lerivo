@@ -91,12 +91,15 @@
       features: { analytics: true },
     });
 
-    // Insert wallet button into the header AFTER AppKit is initialized
-    const walletContainer = document.getElementById("wallet-button");
-    if (walletContainer) {
-      const btn = document.createElement("appkit-button");
-      walletContainer.appendChild(btn);
-    }
+    // Wait for appkit-button to be defined, then inject it into the header
+    customElements.whenDefined("appkit-button").then(() => {
+      const walletContainer = document.getElementById("wallet-button");
+      if (walletContainer) {
+        const btn = document.createElement("appkit-button");
+        btn.setAttribute("namespace", "solana");
+        walletContainer.appendChild(btn);
+      }
+    });
   </script>
   <script src="script.js"></script>
 </body>
