@@ -6,6 +6,8 @@
   <title>LERIVO — Where memecoins meet creators</title>
   <meta name="description" content="The Web3 platform where memecoins pay creators for memes, videos, threads and design." />
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/index.min.js"></script>
 </head>
 <body>
   <header class="nav">
@@ -16,7 +18,7 @@
         <a href="#creators">Creators</a>
         <a href="#docs">Docs</a>
       </nav>
-      <div id="wallet-button"></div>
+      <button id="connect-btn" class="btn-connect">Connect Phantom</button>
     </div>
   </header>
 
@@ -67,38 +69,46 @@
     </div>
   </footer>
 
-  <script type="module">
-    import { createAppKit } from "https://esm.sh/@reown/appkit@1.7.1";
-    import { SolanaAdapter } from "https://esm.sh/@reown/appkit-adapter-solana@1.7.1";
-    import { solana, solanaTestnet, solanaDevnet } from "https://esm.sh/@reown/appkit@1.7.1/networks";
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    const projectId = "2bbc3aa22f77da22b8e31bec1032e9db";
+    const nacl = window.nacl;
+    const bs58 = window.bs58;
 
-    const metadata = {
-      name: "LERIVO",
-      description: "Where memecoins meet creators",
-      url: "https://lerivo.vercel.app",
-      icons: ["https://lerivo.vercel.app/favicon.ico"],
-    };
-
-    const solanaAdapter = new SolanaAdapter();
-
-    createAppKit({
-      adapters: [solanaAdapter],
-      networks: [solana, solanaTestnet, solanaDevnet],
-      metadata,
-      projectId,
-      features: { analytics: true },
-    });
-
-    // Wait for appkit-button to be defined, then inject it into the header
-    customElements.whenDefined("appkit-button").then(() => {
-      const walletContainer = document.getElementById("wallet-button");
-      if (walletContainer) {
-        const btn = document.createElement("appkit-button");
-        btn.setAttribute("namespace", "solana");
-        walletContainer.appendChild(btn);
+    // Загружаем или создаём пару ключей для сессии
+    function getOrCreateKeypair() {
+      const stored = localStorage.getItem("lerivo_dapp_keypair");
+      if (stored) {
+        const { publicKey, secretKey } = JSON.parse(stored);
+        return {
+          publicKey: new Uint8Array(publicKey),
+          secretKey: new Uint8Array(secretKey)
+        };
       }
+      const keypair = nacl.box.keyPair();
+      localStorage.setItem("lerivo_dapp_keypair", JSON.stringify({
+        publicKey: Array.from(keypair.publicKey),
+        secretKey: Array.from(keypair.secretKey)
+      }));
+      return keypair;
+    }
+
+    const dappKeypair = getOrCreateKeypair();
+
+    document.getElementById("connect-btn").addEventListener("click", () => {
+      const dappPublicKey = bs58.encode(dappKeypair.publicKey);
+      const appUrl = window.location.origin;
+      const redirectLink = window.location.origin + "/callback.html";
+
+      const params = new URLSearchParams({
+        dapp_encryption_public_key: dappPublicKey,
+        cluster: "mainnet-beta",
+        app_url: appUrl,
+        redirect_link: redirectLink,
+      });
+
+      const url = `https://phantom.com/ul/v1/connect?${params.toString()}`;
+      window.location.href = url;
     });
   </script>
   <script src="script.js"></script>
