@@ -67,6 +67,30 @@
     </div>
   </footer>
 
+  <script type="module">
+    import { createAppKit } from "https://esm.sh/@reown/appkit@1.7.1";
+    import { SolanaAdapter } from "https://esm.sh/@reown/appkit-adapter-solana@1.7.1";
+    import { solana, solanaTestnet, solanaDevnet } from "https://esm.sh/@reown/appkit@1.7.1/networks";
+
+    const projectId = "2bbc3aa22f77da22b8e31bec1032e9db";
+
+    const metadata = {
+      name: "LERIVO",
+      description: "Where memecoins meet creators",
+      url: "https://lerivo.vercel.app",
+      icons: ["https://lerivo.vercel.app/favicon.ico"],
+    };
+
+    const solanaAdapter = new SolanaAdapter();
+
+    createAppKit({
+      adapters: [solanaAdapter],
+      networks: [solana, solanaTestnet, solanaDevnet],
+      metadata,
+      projectId,
+      features: { analytics: true },
+    });
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
