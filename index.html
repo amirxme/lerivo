@@ -74,7 +74,12 @@
       var siteUrl = window.location.origin;
       var encodedUrl = encodeURIComponent(siteUrl);
       var encodedRef = encodeURIComponent(siteUrl);
+      
+      // Browse deeplink: opens the site inside Phantom's in-app browser
+      // iOS will show a system confirmation prompt "Open in Phantom?"
       var browseUrl = "https://phantom.com/ul/browse/" + encodedUrl + "?ref=" + encodedRef;
+      
+      // Using location.href triggers iOS system prompt
       window.location.href = browseUrl;
     });
   </script>
