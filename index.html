@@ -90,6 +90,13 @@
       projectId,
       features: { analytics: true },
     });
+
+    // Insert wallet button into the header AFTER AppKit is initialized
+    const walletContainer = document.getElementById("wallet-button");
+    if (walletContainer) {
+      const btn = document.createElement("appkit-button");
+      walletContainer.appendChild(btn);
+    }
   </script>
   <script src="script.js"></script>
 </body>
