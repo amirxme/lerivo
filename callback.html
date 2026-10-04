@@ -13,7 +13,7 @@
     <div>
       <h1 id="status" style="font-size:24px; font-weight:600;">Connecting to Phantom...</h1>
       <p id="wallet" style="margin-top:16px; color:var(--muted); font-size:14px;"></p>
-      <a href="/" id="back" style="display:none; margin-top:24px; display:inline-block; padding:12px 24px; border-radius:12px; background:#fff; color:#000; font-weight:500;">Back to LERIVO</a>
+      <a href="/" id="back" style="display:none; margin-top:24px; padding:12px 24px; border-radius:12px; background:#fff; color:#000; font-weight:500; text-decoration:none;">Back to LERIVO</a>
     </div>
   </main>
 
@@ -46,7 +46,7 @@
         const nonce = urlParams.get("nonce");
         const data = urlParams.get("data");
         const errorCode = urlParams.get("errorCode");
-        const errorMessage = urlParamsPub.get("errorMessage");
+        const errorMessage = urlParams.get("errorMessage");
 
         if (errorCode) {
           setStatus("Connection failed: " + (errorMessage || errorCode));
@@ -64,15 +64,13 @@
           return;
         }
 
-        const phantomKeyBytes = bs58.decode(phantomPublicKey);
+        const phantomPubKeyBytes = bs58.decode(phantomPublicKey);
         const nonceBytes = bs58.decode(nonce);
         const dataBytes = bs58.decode(data);
 
-        // Общий секрет через Diffie-Hellman
         const sharedSecret = nacl.box.before(phantomPubKeyBytes, dappKeypair.secretKey);
-
-        // Расшифровка ответа
         const decrypted = nacl.box.open.after(dataBytes, nonceBytes, sharedSecret);
+
         if (!decrypted) {
           setStatus("Failed to decrypt Phantom response.");
           return;
@@ -80,7 +78,6 @@
 
         const payload = JSON.parse(new TextDecoder().decode(decrypted));
 
-        // Сохраняем сессию
         localStorage.setItem("lerivo_session", JSON.stringify({
           session: payload.session,
           publicKey: payload.public_key
