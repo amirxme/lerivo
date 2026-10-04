@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connecting to Phantom — LERIVO</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/index.min.js"></script>
+</head>
+<body>
+  <main style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px;">
+    <div>
+      <h1 id="status" style="font-size:24px; font-weight:600;">Connecting to Phantom...</h1>
+      <p id="wallet" style="margin-top:16px; color:var(--muted); font-size:14px;"></p>
+      <a href="/" id="back" style="display:none; margin-top:24px; display:inline-block; padding:12px 24px; border-radius:12px; background:#fff; color:#000; font-weight:500;">Back to LERIVO</a>
+    </div>
+  </main>
+
+  <script>
+    const nacl = window.nacl;
+    const bs58 = window.bs58;
+
+    function getKeypair() {
+      const stored = localStorage.getItem("lerivo_dapp_keypair");
+      if (!stored) return null;
+      const { publicKey, secretKey } = JSON.parse(stored);
+      return {
+        publicKey: new Uint8Array(publicKey),
+        secretKey: new Uint8Array(secretKey)
+      };
+    }
+
+    function setStatus(text, wallet) {
+      document.getElementById("status").textContent = text;
+      if (wallet) {
+        document.getElementById("wallet").textContent = wallet;
+        document.getElementById("back").style.display = "inline-block";
+      }
+    }
+
+    (async function() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const phantomPublicKey = urlParams.get("phantom_encryption_public_key");
+        const nonce = urlParams.get("nonce");
+        const data = urlParams.get("data");
+        const errorCode = urlParams.get("errorCode");
+        const errorMessage = urlParamsPub.get("errorMessage");
+
+        if (errorCode) {
+          setStatus("Connection failed: " + (errorMessage || errorCode));
+          return;
+        }
+
+        if (!phantomPublicKey || !nonce || !data) {
+          setStatus("Invalid response from Phantom.");
+          return;
+        }
+
+        const dappKeypair = getKeypair();
+        if (!dappKeypair) {
+          setStatus("Session lost. Please try again from the home page.");
+          return;
+        }
+
+        const phantomKeyBytes = bs58.decode(phantomPublicKey);
+        const nonceBytes = bs58.decode(nonce);
+        const dataBytes = bs58.decode(data);
+
+        // Общий секрет через Diffie-Hellman
+        const sharedSecret = nacl.box.before(phantomPubKeyBytes, dappKeypair.secretKey);
+
+        // Расшифровка ответа
+        const decrypted = nacl.box.open.after(dataBytes, nonceBytes, sharedSecret);
+        if (!decrypted) {
+          setStatus("Failed to decrypt Phantom response.");
+          return;
+        }
+
+        const payload = JSON.parse(new TextDecoder().decode(decrypted));
+
+        // Сохраняем сессию
+        localStorage.setItem("lerivo_session", JSON.stringify({
+          session: payload.session,
+          publicKey: payload.public_key
+        }));
+
+        setStatus("Connected!", "Wallet: " + payload.public_key);
+      } catch (e) {
+        console.error(e);
+        setStatus("Error: " + e.message);
+      }
+    })();
+  </script>
+</body>
+</html>
