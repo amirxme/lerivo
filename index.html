@@ -20,6 +20,9 @@
       </nav>
       <button id="connect-btn" class="btn-connect">Connect Phantom</button>
     </div>
+    <div id="ios-hint" class="ios-hint">
+      On iPhone, please open this site inside the Phantom app to connect.
+    </div>
   </header>
 
   <main>
@@ -72,10 +75,18 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    // iOS hint
+    (function() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const inPhantom = /Phantom/i.test(navigator.userAgent);
+      if (isIOS && !inPhantom) {
+        document.getElementById("ios-hint").style.display = "block";
+      }
+    })();
+
     const nacl = window.nacl;
     const bs58 = window.bs58;
 
-    // Загружаем или создаём пару ключей для сессии
     function getOrCreateKeypair() {
       const stored = localStorage.getItem("lerivo_dapp_keypair");
       if (stored) {
