@@ -254,3 +254,75 @@ footer {
   text-align: center;
   border-top: 1px solid var(--border);
 }
+/* Launch form */
+.launch {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 96px 20px;
+}
+
+.launch h2 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.launch-sub {
+  margin-top: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.launch-form {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.btn-full {
+  width: 100%;
+  margin-top: 8px;
+  cursor: pointer;
+  border: none;
+}
