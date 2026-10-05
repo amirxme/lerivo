@@ -16,7 +16,7 @@
         <a href="#creators">Creators</a>
         <a href="#docs">Docs</a>
       </nav>
-      <button id="connect-btn" class="btn-connect">Connect Phantom</button>
+      <a href="#launch" class="btn-connect">Launch a campaign</a>
     </div>
   </header>
 
@@ -35,7 +35,7 @@
         Pay only for the winners.
       </p>
       <div class="cta">
-        <a href="#create" class="btn-primary">Launch a campaign</a>
+        <a href="#launch" class="btn-primary">Launch a campaign</a>
         <a href="#campaigns" class="btn-secondary">Browse campaigns</a>
       </div>
     </section>
@@ -54,6 +54,57 @@
         <p>Winners are paid directly to their Solana wallet. Transparent and instant.</p>
       </div>
     </section>
+
+    <section class="launch" id="launch">
+      <h2>Launch a campaign</h2>
+      <p class="launch-sub">Tell us about your project. We'll reach out within 24 hours.</p>
+
+      <form action="https://formspree.io/f/xwlvegwk" method="POST" class="launch-form">
+        <div class="field">
+          <label>Project name</label>
+          <input type="text" name="project_name" required placeholder="e.g. Doge Killer" />
+        </div>
+
+        <div class="field">
+          <label>X (Twitter) profile</label>
+          <input type="url" name="twitter" required placeholder="https://x.com/yourproject" />
+        </div>
+
+        <div class="field">
+          <label>Token link</label>
+          <input type="url" name="token_link" required placeholder="https://dexscreener.com/..." />
+        </div>
+
+        <div class="field">
+          <label>Campaign budget (SOL or USDC)</label>
+          <input type="text" name="budget" required placeholder="e.g. 5 SOL" />
+        </div>
+
+        <div class="field">
+          <label>Content type</label>
+          <select name="content_type" required>
+            <option value="">Select…</option>
+            <option value="Memes">Memes</option>
+            <option value="Videos">Videos</option>
+            <option value="X posts / threads">X posts / threads</option>
+            <option value="Art / design">Art / design</option>
+            <option value="Mixed">Mixed</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Telegram or email for contact</label>
+          <input type="text" name="contact" required placeholder="@username or email" />
+        </div>
+
+        <div class="field">
+          <label>Anything else? (optional)</label>
+          <textarea name="notes" rows="4" placeholder="Deadline, references, special requests…"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Submit campaign</button>
+      </form>
+    </section>
   </main>
 
   <footer>
@@ -69,19 +120,6 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
-
-    document.getElementById("connect-btn").addEventListener("click", function() {
-      var siteUrl = window.location.origin;
-      var encodedUrl = encodeURIComponent(siteUrl);
-      var encodedRef = encodeURIComponent(siteUrl);
-      
-      // Browse deeplink: opens the site inside Phantom's in-app browser
-      // iOS will show a system confirmation prompt "Open in Phantom?"
-      var browseUrl = "https://phantom.com/ul/browse/" + encodedUrl + "?ref=" + encodedRef;
-      
-      // Using location.href triggers iOS system prompt
-      window.location.href = browseUrl;
-    });
   </script>
 </body>
 </html>
