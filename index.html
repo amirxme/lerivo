@@ -130,14 +130,15 @@
     const SUPABASE_URL = "https://irmfgxvzafvprapdipbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_gXDcHrALBuBHIjKOJVDILw_w-mDol-z";
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { createClient } = window.supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const authArea = document.getElementById("auth-area");
     const loginPrompt = document.getElementById("login-prompt");
     const campaignForm = document.getElementById("campaign-form");
 
     async function signInWithX() {
-      await supabase.auth.signInWithOAuth({
+      await supabaseClient.auth.signInWithOAuth({
         provider: "twitter",
         options: {
           redirectTo: window.location.origin + "/",
@@ -146,7 +147,7 @@
     }
 
     async function signOut() {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       renderAuth(null);
     }
 
@@ -198,11 +199,11 @@
 
     document.getElementById("login-inline").addEventListener("click", signInWithX);
 
-    supabase.auth.getSession().then(({ data }) => {
+    supabaseClient.auth.getSession().then(({ data }) => {
       renderAuth(data.session ? data.session.user : null);
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
       renderAuth(session ? session.user : null);
     });
   </script>
